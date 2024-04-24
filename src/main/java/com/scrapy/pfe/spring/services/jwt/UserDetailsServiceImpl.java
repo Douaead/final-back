@@ -1,4 +1,4 @@
-package com.scrapy.pfe.spring.services.auth.jwt;
+package com.scrapy.pfe.spring.services.jwt;
 
 import com.scrapy.pfe.spring.entities.User;
 import com.scrapy.pfe.spring.repositories.UserRepository;

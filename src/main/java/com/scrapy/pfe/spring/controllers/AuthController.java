@@ -1,15 +1,13 @@
 package com.scrapy.pfe.spring.controllers;
 
-import com.scrapy.pfe.spring.dtos.AuthenticationRequest;
-import com.scrapy.pfe.spring.dtos.AuthenticationResponse;
-import com.scrapy.pfe.spring.dtos.SignupRequest;
-import com.scrapy.pfe.spring.dtos.UserDto;
+import com.scrapy.pfe.spring.dtos.*;
 import com.scrapy.pfe.spring.entities.User;
 import com.scrapy.pfe.spring.repositories.UserRepository;
-import com.scrapy.pfe.spring.services.auth.AuthService;
-import com.scrapy.pfe.spring.services.auth.jwt.UserDetailsServiceImpl;
+import com.scrapy.pfe.spring.services.AuthService;
+import com.scrapy.pfe.spring.services.jwt.UserDetailsServiceImpl;
 import com.scrapy.pfe.spring.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -32,46 +31,46 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService, JwtUtil jwtUtil, UserRepository userRepository) {
-        this.authService = authService;
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService, UserDetailsServiceImpl userDetailsService1, UserDetailsServiceImpl userDetailsService2, JwtUtil jwtUtil, UserRepository userRepository){
+        this.authService=authService;
         this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService2;
 
-        this.userDetailsService = userDetailsService;
+
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
     }
-
     @PostMapping("/signup")
     public ResponseEntity<?> signupUser(@RequestBody SignupRequest signupRequest) {
         UserDto createdUserDto = authService.createUser(signupRequest);
-        if (createdUserDto == null) {
-            return new ResponseEntity<>("User not created. Come again later", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
+        return createdUserDto != null
+                ? new ResponseEntity<>(createdUserDto, HttpStatus.CREATED)
+                : new ResponseEntity<>("User not created. Try again later.", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/login")
     public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws IOException {
-        try {
+        try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
+        }catch(BadCredentialsException e){
             throw new BadCredentialsException("incorrect username or password");
-        } catch (DisabledException disabledException) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not active");
+        }catch(DisabledException disabledException){
+            response.sendError(HttpServletResponse.SC_NOT_FOUND,"User not active");
             return null;
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
         Optional<User> optionalUser = userRepository.findFirstByEmail(userDetails.getUsername());
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-        if (optionalUser.isPresent()) {
+        AuthenticationResponse authenticationResponse= new AuthenticationResponse();
+        if(optionalUser.isPresent()){
             authenticationResponse.setJwt(jwt);
             authenticationResponse.setUserRole(optionalUser.get().getUserRole());
             authenticationResponse.setUserId(optionalUser.get().getId());
@@ -83,7 +82,7 @@ public class AuthController {
     }
 
     @GetMapping("/scrape")
-    public List<String> scrapeEmplois() {
+    public List<String> scrapeArticles() {
         List<String> articleTitles = new ArrayList<>();
 
         try {
@@ -92,13 +91,13 @@ public class AuthController {
                     .get();
 
             Elements articleElements = doc.select(".job"); // Modifiez ceci pour correspondre au bon sélecteur
-            System.out.println("----------GESTION D'EMPLOIS-----------");
+            System.out.println("------------------------------------------");
             for (Element articleElement : articleElements) {
 
                 String title = articleElement.select(" div > a ").text();
-                String description = articleElement.select(" .jobdescription  ").text();
+                String ville = articleElement.select(" .jobdescription  ").text();
 
-                System.out.println(title + " - " + description);
+                System.out.println( title + " - " +ville);
 
             }
         } catch (IOException e) {
@@ -107,5 +106,19 @@ public class AuthController {
 
         return articleTitles;
     }
+    @GetMapping("/scrapeIndeed")
+    public String getpage_inded() throws IOException {
 
+        Document doc=Jsoup.connect("https://ma.indeed.com/jobs?q=stage+web&fromage=1%22&vjk=fac97b1b77f155ce")
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.57")
+                .header("Accept","/")
+                .header("Accept-Encoding","gzip, deflate, br")
+                .header("Connection","keep-alive")
+                .header("Cookie","cookie")
+                .timeout(5000)
+                .method(Connection.Method.GET)
+                .get();
+        return doc.html();
     }
+
+}

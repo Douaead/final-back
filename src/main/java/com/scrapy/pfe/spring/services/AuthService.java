@@ -1,4 +1,4 @@
-package com.scrapy.pfe.spring.services.auth;
+package com.scrapy.pfe.spring.services;
 
 import com.scrapy.pfe.spring.dtos.SignupRequest;
 import com.scrapy.pfe.spring.dtos.UserDto;
