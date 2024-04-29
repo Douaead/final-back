@@ -13,6 +13,7 @@ import java.util.Collections;
 
 
 
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -30,6 +31,6 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getUserRole().name())));
+                Collections.singletonList(new SimpleGrantedAuthority(user.getUserRole().toString())));
     }
 }

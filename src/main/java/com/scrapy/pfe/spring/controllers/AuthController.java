@@ -114,11 +114,10 @@ public class AuthController {
                 .header("Accept","/")
                 .header("Accept-Encoding","gzip, deflate, br")
                 .header("Connection","keep-alive")
-                .header("Cookie","cookie")
+                .header("Cookie","CTK=1hse0gmejjrig801; __cf_bm=E83E2TjUtcJisrulBK0XJaxOmnMM4JXYsl8UQarR1aU-1714165097-1.0.1.1-8nypwPLsaVkx0paWTE9.lBktvjq3aQcrAFJ5..4QIFhzVEuc5X0pQzw1a7nrWVyMB3_lfMx1FxevpTMqAgN1rg; _cfuvid=UxXiY7HtfEukyT.TokhcgqLvDbg58gPee2HXQ5ciqUc-1714162260801-0.0.1.1-604800000; INDEED_CSRF_TOKEN=HRmSwAR4fYmXQPfePXYY48XbPhTJuVww; LV=\"LA=1714162260:CV=1714162260:TS=1714162260\"; RQ=\"q=stage+web&l=&ts=1714162418757&rbsalmin=0&rbsalmax=0\"")
                 .timeout(5000)
                 .method(Connection.Method.GET)
                 .get();
         return doc.html();
     }
-
-}
+   }

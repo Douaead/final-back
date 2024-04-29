@@ -10,15 +10,4 @@ public class CategoryDto {
     private Long id;
     private String name;
     private String description;
-
-    @Lob
-    private byte[] img;
-
-    public byte[] getImg() {
-        return img;
-    }
-
-    public void setImg(byte[] img) {
-        this.img = img;
-    }
 }

@@ -21,7 +21,7 @@ public class AuthServiceImplementation implements AuthService {
 
     @PostConstruct
     public void createAdminAccount() {
-        User adminAccount = userRepository.findByUserRole(UserRole.ADMIN);
+        User adminAccount = (User) userRepository.findByUserRole(UserRole.ADMIN);
         if (adminAccount == null) {
             User user = new User();
             user.setName("admin");

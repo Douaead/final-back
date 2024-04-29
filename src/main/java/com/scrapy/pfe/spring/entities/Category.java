@@ -13,16 +13,5 @@ public class Category {
     private String name;
     private String description;
 
-    @Lob
-    @Column(columnDefinition = "longblob" )
-    private byte[] img;
 
-    // Getters and setters for the image field
-    public byte[] getImg() {
-        return img;
-    }
-
-    public void setImg(byte[] img) {
-        this.img = img;
-    }
 }

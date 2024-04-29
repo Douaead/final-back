@@ -34,11 +34,10 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()  // Allows unrestricted access to authentication endpoints
-                        .requestMatchers("/api/customer/**").permitAll()// Restricts access based on authority
-                        .requestMatchers(String.valueOf(PathRequest.toStaticResources().atCommonLocations())).permitAll() // Optionally allow static resources
+                        .requestMatchers("/api/customer/**").permitAll()// Restricts access based on authorit
                         .anyRequest().authenticated())  // All other requests require authentication
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session policy
                 .authenticationProvider(authenticationProvider())
@@ -51,7 +50,8 @@ public class WebSecurityConfiguration {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);  // Ensure this is an implementation of UserDetailsService
-        provider.setPasswordEncoder(passwordEncoder());  // Use bcrypt password hashing
+        provider.setPasswordEncoder(passwordEncoder());
+    // Use bcrypt password hashing
         return provider;
     }
 

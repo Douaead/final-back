@@ -1,38 +1,36 @@
 package com.scrapy.pfe.spring.configurations;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-
-
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCorsFilter implements Filter {
 
-    private final String   clientAppUrl = "http://localhost:4201/*";
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException{
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
-        Map<String,String> map=new HashMap<>();
-        String originHeader = request.getHeader("Origin"); // Utilisez "Origin" au lieu de "origin"
 
-
+        String originHeader = request.getHeader("Origin");
 
         response.setHeader("Access-Control-Allow-Origin", originHeader);
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "*");
-
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -43,11 +41,11 @@ public class SimpleCorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-
+        // Ne rien faire dans cette méthode si aucune initialisation n'est nécessaire.
     }
 
     @Override
     public void destroy() {
-
+        // Ne rien faire dans cette méthode si aucune destruction n'est nécessaire.
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-
-
 @RequiredArgsConstructor
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -18,21 +16,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CategoryDto postCategory(CategoryDto categoryDto) throws IOException {
+        // Création de l'entité Category à partir du DTO reçu
         Category category = new Category();
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());
-        if (categoryDto.getImg() != null) {
-            category.setImg(categoryDto.getImg());
-        }
-        // Save category to repository
+
+        // Sauvegarde de l'entité Category dans la base de données
         Category createdCategory = categoryRepository.save(category);
 
-        // Create CategoryDto with ID, Name, Description, and Image
+        // Création d'un nouveau DTO pour la réponse, avec tous les champs nécessaires
         CategoryDto createdCategoryDto = new CategoryDto();
         createdCategoryDto.setId(createdCategory.getId());
         createdCategoryDto.setName(createdCategory.getName());
         createdCategoryDto.setDescription(createdCategory.getDescription());
-        createdCategoryDto.setImg(createdCategory.getImg());
+
+
+
         return createdCategoryDto;
     }
 }
