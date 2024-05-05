@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,4 +36,16 @@ public class CustomerServiceImpl implements CustomerService {
 
         return createdCategoryDto;
     }
+
+    @Override
+    public List<CategoryDto> getAllCategories() {
+        return categoryRepository.findAll().stream().map(Category::getCategoryDto).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<CategoryDto> getAllCategoriesByTitle(String title) {
+        return categoryRepository.findAllByNameContaining(title).stream().map(Category::getCategoryDto).collect(Collectors.toList());
+    }
+
 }
