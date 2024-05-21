@@ -8,6 +8,17 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface CategoryRepository extends JpaRepository <Category,Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+
+   // You can define custom query methods here if needed
    List<Category> findAllByNameContaining(String title);
+   //List<Category> findApprovedAndPostedCategories();
+   List<Category> findByPosted(boolean posted);
+   List<Category> findByApprovedTrueAndPostedTrue();
+
+
 }
+
+
+
+
